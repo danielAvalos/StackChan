@@ -62,11 +62,11 @@ prueba de rollback verificable.
 ## Flujo de actualización
 
 El clon original permanece como referencia local. Esta copia de trabajo tiene
-la rama `codex/timothee-factory-1.6.0`, el remoto `origin` apuntando al fork
-personal `https://github.com/danielAvalos/StackChan.git` y el remoto `upstream`
-apuntando a `https://github.com/m5stack/StackChan.git`. El fork remoto ya fue
-creado; la rama local se publica después de configurar autenticación Git para
-GitHub.
+la rama `codex/timothee-factory-1.6.0`, el remoto `origin` apuntando por SSH al
+fork personal `git@github.com:danielAvalos/StackChan.git` y el remoto
+`upstream` apuntando a `https://github.com/m5stack/StackChan.git`. El fork
+remoto ya fue creado; la rama local se publica sólo después de revisar la
+sincronización y confirmar la autenticación Git para GitHub.
 
 Antes de integrar cambios de upstream:
 
