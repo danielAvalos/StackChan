@@ -41,6 +41,11 @@ jobs:
           git remote add upstream "$UPSTREAM_REPOSITORY"
           git fetch --prune --tags upstream main
 
+      - name: Validate factory backup gate tooling
+        run: |
+          node --check tools/verify_factory_backup.mjs
+          node --test tools/verify_factory_backup.test.mjs
+
       - name: Prepare and validate sync branch
         id: sync
         run: |
