@@ -14,10 +14,20 @@ async function fixture() {
     flash: Buffer.from('factory-flash-fixture'),
     sd: Buffer.from('micro-sd-fixture'),
     report: Buffer.from('Detected flash size: 16 MB\n'),
+    rollback: Buffer.from(JSON.stringify({
+      schemaVersion: 1,
+      kind: 'stackchan-rollback-proof',
+      status: 'verified',
+      method: 'official-restore-path',
+      verifiedAt: '2026-11-01T00:00:00Z',
+      factoryFirmwareVersion: '1.6.0',
+      factoryFlashSha256: digest('factory-flash-fixture'),
+    })),
   };
   await writeFile(join(root, 'factory-flash.bin'), files.flash);
   await writeFile(join(root, 'microsd.img'), files.sd);
   await writeFile(join(root, 'flash-id.txt'), files.report);
+  await writeFile(join(root, 'rollback-proof.json'), files.rollback);
   const manifest = {
     schemaVersion: 1,
     kind: 'stackchan-factory-preservation',
@@ -26,6 +36,7 @@ async function fixture() {
       { role: 'factory-flash', path: 'factory-flash.bin', sizeBytes: files.flash.length, sha256: digest(files.flash) },
       { role: 'microSD-image', path: 'microsd.img', sizeBytes: files.sd.length, sha256: digest(files.sd) },
       { role: 'esptool-report', path: 'flash-id.txt', sizeBytes: files.report.length, sha256: digest(files.report) },
+      { role: 'rollback-proof', path: 'rollback-proof.json', sizeBytes: files.rollback.length, sha256: digest(files.rollback) },
     ],
   };
   await writeFile(join(root, 'manifest.json'), JSON.stringify(manifest));
@@ -38,7 +49,19 @@ test('validates complete factory flash, microSD and esptool evidence', async () 
     const result = await verifyFactoryBackup(root);
     assert.equal(result.status, 'pass');
     assert.equal(result.factoryFirmwareVersion, '1.6.0');
-    assert.deepEqual(result.artifacts.map(({ role }) => role), ['factory-flash', 'microSD-image', 'esptool-report']);
+    assert.equal(result.rollbackProof.status, 'verified');
+    assert.deepEqual(result.artifacts.map(({ role }) => role), ['factory-flash', 'microSD-image', 'esptool-report', 'rollback-proof']);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('rejects a backup without explicit rollback evidence', async () => {
+  const { root, manifest } = await fixture();
+  try {
+    manifest.artifacts = manifest.artifacts.filter(({ role }) => role !== 'rollback-proof');
+    await writeFile(join(root, 'manifest.json'), JSON.stringify(manifest));
+    await assert.rejects(verifyFactoryBackup(root), /required artifact is missing: rollback-proof/);
   } finally {
     await rm(root, { recursive: true, force: true });
   }

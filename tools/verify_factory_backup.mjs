@@ -5,7 +5,7 @@ import { createReadStream } from 'node:fs';
 import { lstat, readFile, realpath } from 'node:fs/promises';
 import { basename, dirname, isAbsolute, join, relative, resolve } from 'node:path';
 
-const REQUIRED_ROLES = new Set(['factory-flash', 'microSD-image', 'esptool-report']);
+const REQUIRED_ROLES = new Set(['factory-flash', 'microSD-image', 'esptool-report', 'rollback-proof']);
 const SHA256 = /^[a-f0-9]{64}$/;
 
 function fail(message) {
@@ -92,10 +92,40 @@ export async function verifyFactoryBackup(backupDirectory) {
     checked.push({ role: artifact.role, file: basename(filePath), sizeBytes: info.size, sha256: actualHash });
   }
   for (const role of REQUIRED_ROLES) if (!seenRoles.has(role)) fail(`required artifact is missing: ${role}`);
+
+  const factoryFlash = manifest.artifacts.find((artifact) => artifact.role === 'factory-flash');
+  const rollbackArtifact = manifest.artifacts.find((artifact) => artifact.role === 'rollback-proof');
+  let rollbackProof;
+  try {
+    const rollbackPath = await resolveBackupFile(root, rollbackArtifact.path, 'rollback-proof.path');
+    rollbackProof = JSON.parse(await readFile(rollbackPath, 'utf8'));
+  } catch {
+    fail('rollback-proof must be valid JSON');
+  }
+  if (
+    rollbackProof?.schemaVersion !== 1
+    || rollbackProof?.kind !== 'stackchan-rollback-proof'
+    || rollbackProof?.status !== 'verified'
+  ) {
+    fail('rollback-proof schema or status is unsupported');
+  }
+  assertString(rollbackProof.method, 'rollback-proof.method');
+  assertString(rollbackProof.verifiedAt, 'rollback-proof.verifiedAt');
+  if (!SHA256.test(rollbackProof.factoryFlashSha256 ?? '') || rollbackProof.factoryFlashSha256 !== factoryFlash.sha256) {
+    fail('rollback-proof must bind to the verified factory-flash SHA-256');
+  }
+  if (rollbackProof.factoryFirmwareVersion !== manifest.device.factoryFirmwareVersion) {
+    fail('rollback-proof firmware version does not match the manifest');
+  }
   return Object.freeze({
     status: 'pass', schemaVersion: manifest.schemaVersion, kind: manifest.kind,
     model: manifest.device.model, factoryFirmwareVersion: manifest.device.factoryFirmwareVersion,
     artifacts: Object.freeze(checked.map((artifact) => Object.freeze(artifact))),
+    rollbackProof: Object.freeze({
+      status: rollbackProof.status,
+      method: rollbackProof.method,
+      verifiedAt: rollbackProof.verifiedAt,
+    }),
   });
 }
 

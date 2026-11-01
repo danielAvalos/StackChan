@@ -54,10 +54,14 @@ Cuando el conjunto esté reunido, crear un `manifest.json` con el esquema
 node tools/verify_factory_backup.mjs /ruta/al/respaldo
 ```
 
-La herramienta exige artefactos `factory-flash`, `microSD-image` y
-`esptool-report`, comprueba tamaño y SHA-256 mediante streaming, y rechaza
-traversal, symlinks fuera del directorio, duplicados y archivos faltantes. No
-ejecuta `esptool`, no abre puertos serie y no contiene comandos de escritura.
+La herramienta exige artefactos `factory-flash`, `microSD-image`,
+`esptool-report` y `rollback-proof`. El último debe ser JSON con
+`kind=stackchan-rollback-proof`, `status=verified`, la versión factory y el
+SHA-256 exacto del dump `factory-flash`; así el manifiesto no puede pasar por
+alto la evidencia de retorno. La herramienta comprueba tamaño y SHA-256
+mediante streaming, y rechaza traversal, symlinks fuera del directorio,
+duplicados y archivos faltantes. No ejecuta `esptool`, no abre puertos serie y
+no contiene comandos de escritura.
 
 ## Respaldo de la microSD de 16 GB
 
