@@ -106,6 +106,7 @@ export async function verifyFactoryBackup(backupDirectory) {
     rollbackProof?.schemaVersion !== 1
     || rollbackProof?.kind !== 'stackchan-rollback-proof'
     || rollbackProof?.status !== 'verified'
+    || rollbackProof?.evidenceType !== 'structural-attestation'
   ) {
     fail('rollback-proof schema or status is unsupported');
   }
@@ -123,6 +124,7 @@ export async function verifyFactoryBackup(backupDirectory) {
     artifacts: Object.freeze(checked.map((artifact) => Object.freeze(artifact))),
     rollbackProof: Object.freeze({
       status: rollbackProof.status,
+      validation: 'manifest-structure-only',
       method: rollbackProof.method,
       verifiedAt: rollbackProof.verifiedAt,
     }),

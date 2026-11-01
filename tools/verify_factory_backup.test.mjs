@@ -18,9 +18,10 @@ async function fixture() {
       schemaVersion: 1,
       kind: 'stackchan-rollback-proof',
       status: 'verified',
+      evidenceType: 'structural-attestation',
       method: 'official-restore-path',
       verifiedAt: '2026-11-01T00:00:00Z',
-      factoryFirmwareVersion: '1.6.0',
+      factoryFirmwareVersion: 'synthetic-fixture-1.6.0',
       factoryFlashSha256: digest('factory-flash-fixture'),
     })),
   };
@@ -31,7 +32,7 @@ async function fixture() {
   const manifest = {
     schemaVersion: 1,
     kind: 'stackchan-factory-preservation',
-    device: { model: 'StackChan/CoreS3', factoryFirmwareVersion: '1.6.0' },
+    device: { model: 'StackChan/CoreS3', factoryFirmwareVersion: 'synthetic-fixture-1.6.0' },
     artifacts: [
       { role: 'factory-flash', path: 'factory-flash.bin', sizeBytes: files.flash.length, sha256: digest(files.flash) },
       { role: 'microSD-image', path: 'microsd.img', sizeBytes: files.sd.length, sha256: digest(files.sd) },
@@ -48,8 +49,9 @@ test('validates complete factory flash, microSD and esptool evidence', async () 
   try {
     const result = await verifyFactoryBackup(root);
     assert.equal(result.status, 'pass');
-    assert.equal(result.factoryFirmwareVersion, '1.6.0');
+    assert.equal(result.factoryFirmwareVersion, 'synthetic-fixture-1.6.0');
     assert.equal(result.rollbackProof.status, 'verified');
+    assert.equal(result.rollbackProof.validation, 'manifest-structure-only');
     assert.deepEqual(result.artifacts.map(({ role }) => role), ['factory-flash', 'microSD-image', 'esptool-report', 'rollback-proof']);
   } finally {
     await rm(root, { recursive: true, force: true });

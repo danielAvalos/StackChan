@@ -1,9 +1,10 @@
-# Respaldo y rollback del StackChan factory 1.6.0
+# Respaldo y rollback del StackChan factory (baseline reportado)
 
 Este runbook protege el firmware y la configuración de fábrica antes de
-cualquier prueba de Timothée. No se ejecutó sobre el robot. La versión `1.6.0`
-es el dato observado por el propietario; debe registrarse de nuevo justo antes
-de una operación física.
+cualquier prueba de Timothée. No se ejecutó sobre el robot. El propietario
+reporta actualmente la versión `1.6.0`, pero la identidad exacta del binario no
+ha sido releída ni hasheada por este repositorio; el manifiesto debe registrar
+la versión que se lea del dispositivo justo antes de una operación física.
 
 ## Invariantes
 
@@ -28,10 +29,10 @@ python -m esptool --chip esp32s3 --port PORT flash-id \
   | tee factory-esptool-flash-id.txt
 
 python -m esptool --chip esp32s3 --port PORT read-flash 0 ALL \
-  factory-flash-1.6.0.bin
+  factory-flash-<version-leida>.bin
 
-shasum -a 256 factory-flash-1.6.0.bin \
-  | tee factory-flash-1.6.0.sha256
+shasum -a 256 factory-flash-<version-leida>.bin \
+  | tee factory-flash-<version-leida>.sha256
 ```
 
 Conservar junto al binario:
@@ -39,7 +40,8 @@ Conservar junto al binario:
 - fecha/hora y zona horaria;
 - número de serie, MAC y puerto utilizado;
 - salida completa de `flash-id`;
-- versión visible del firmware (`1.6.0`, si continúa siendo la observada);
+- versión visible del firmware (`<version-leida>`; hoy sólo existe el reporte
+  del propietario, no una relectura independiente);
 - versión exacta de `esptool` y sistema operativo;
 - tamaño reportado por el chip y tamaño real del archivo.
 
@@ -56,9 +58,12 @@ node tools/verify_factory_backup.mjs /ruta/al/respaldo
 
 La herramienta exige artefactos `factory-flash`, `microSD-image`,
 `esptool-report` y `rollback-proof`. El último debe ser JSON con
-`kind=stackchan-rollback-proof`, `status=verified`, la versión factory y el
-SHA-256 exacto del dump `factory-flash`; así el manifiesto no puede pasar por
-alto la evidencia de retorno. La herramienta comprueba tamaño y SHA-256
+`kind=stackchan-rollback-proof`, `status=verified`,
+`evidenceType=structural-attestation`, la versión factory y el SHA-256 exacto
+del dump `factory-flash`; así el manifiesto no puede pasar por alto la
+existencia de una atestación de retorno. El resultado del validador es sólo
+`manifest-structure-only`: no demuestra criptográficamente que se haya
+ejecutado una restauración física. La herramienta comprueba tamaño y SHA-256
 mediante streaming, y rechaza traversal, symlinks fuera del directorio,
 duplicados y archivos faltantes. No ejecuta `esptool`, no abre puertos serie y
 no contiene comandos de escritura.
