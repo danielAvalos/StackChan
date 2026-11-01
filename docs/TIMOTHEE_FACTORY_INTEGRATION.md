@@ -63,10 +63,11 @@ prueba de rollback verificable.
 
 El clon original permanece como referencia local. Esta copia de trabajo tiene
 la rama `codex/timothee-factory-1.6.0`, el remoto `origin` apuntando por SSH al
-fork personal `git@github.com:danielAvalos/StackChan.git` y el remoto
+fork personal `ssh://git@ssh.github.com:443/danielAvalos/StackChan.git` y el remoto
 `upstream` apuntando a `https://github.com/m5stack/StackChan.git`. El fork
-remoto ya fue creado; la rama local se publica sólo después de revisar la
-sincronización y confirmar la autenticación Git para GitHub.
+remoto ya fue creado. La rama se publicó después de revisar la sincronización
+y confirmar la autenticación Git para GitHub; no se publicó ningún cambio en
+`upstream`.
 
 Auditoría local del 2026-11-01: `git fetch --prune --tags upstream main` dejó
 `upstream/main` en `f901cc2` (`chore: sync wecom-digest-forward workflow`). La
@@ -75,7 +76,9 @@ propios delante de ese punto; no se requiere merge de upstream. `git diff
 --check upstream/main...HEAD` pasa. El entorno local no tiene CMake, por lo que
 el test host `timothee_expression_test` se compiló directamente con Apple
 Clang/C++17 y pasó; el workflow mantiene CMake/CTest como gate autoritativo en
-CI.
+CI. La publicación SSH de la rama al fork `danielAvalos/StackChan` pasó y dejó
+el remoto en `1d90410`; la URL local usa `ssh.github.com:443` para evitar el
+cierre de `github.com:443`.
 
 Antes de integrar cambios de upstream:
 
