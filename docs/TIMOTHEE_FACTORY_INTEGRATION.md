@@ -12,6 +12,8 @@ El contrato vive en:
 
 - `firmware/main/stackchan/timothee/timothee_expression.h`
 - `firmware/main/stackchan/timothee/timothee_expression.cpp`
+- `firmware/main/stackchan/timothee/timothee_expression_bridge.h`
+- `firmware/main/stackchan/timothee/timothee_expression_bridge.cpp`
 
 Es deliberadamente independiente de proveedores, Sky, Genesis y transporte.
 Un mensaje remoto solo podrá convertirse en una expresión después de pasar
@@ -27,10 +29,13 @@ existen en StackChan (`Neutral`, `Happy`, `Doubt`, `Sleepy`). Los porcentajes
 de brillo y las duraciones quedan acotados en tipos enteros.
 
 La aplicación de la expresión al avatar todavía no se engancha al ciclo de
-arranque: eso es intencional. Primero se valida el contrato en host; después
-se añadirá un consumidor explícito con prioridad y restauración del estado
-anterior para que Timothee no interfiera con AI Agent, llamadas, OTA o
-provisionamiento.
+arranque: eso es intencional. `ExpressionBridge` es el consumidor explícito,
+pero nace desactivado (`BridgePolicy.enabled=false`) y solo puede ser invocado
+por un punto de integración futuro que el dueño habilite. Cuando se habilita,
+valida el vocabulario cerrado, limita la duración y usa el modificador timed
+existente para restaurar la emoción anterior; no procesa JSON, red, WSS,
+credenciales, OTA ni comandos. Así el comportamiento factory 1.6.0 no cambia
+por compilar la extensión.
 
 ## Red y seguridad
 
