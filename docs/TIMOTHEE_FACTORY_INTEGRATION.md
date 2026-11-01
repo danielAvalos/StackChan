@@ -68,6 +68,15 @@ fork personal `git@github.com:danielAvalos/StackChan.git` y el remoto
 remoto ya fue creado; la rama local se publica sólo después de revisar la
 sincronización y confirmar la autenticación Git para GitHub.
 
+Auditoría local del 2026-11-01: `git fetch --prune --tags upstream main` dejó
+`upstream/main` en `f901cc2` (`chore: sync wecom-digest-forward workflow`). La
+rama `codex/timothee-factory-1.6.0` está `0` commits detrás y `5` commits
+propios delante de ese punto; no se requiere merge de upstream. `git diff
+--check upstream/main...HEAD` pasa. El entorno local no tiene CMake, por lo que
+el test host `timothee_expression_test` se compiló directamente con Apple
+Clang/C++17 y pasó; el workflow mantiene CMake/CTest como gate autoritativo en
+CI.
+
 Antes de integrar cambios de upstream:
 
 ```sh
