@@ -1,0 +1,68 @@
+name: Sync StackChan upstream
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 3 * * 1'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    env:
+      EXTENSION_BRANCH: codex/timothee-factory-1.6.0
+      UPSTREAM_REPOSITORY: https://github.com/m5stack/StackChan.git
+
+    steps:
+      - name: Checkout extension branch
+        uses: actions/checkout@v4
+        with:
+          ref: codex/timothee-factory-1.6.0
+          fetch-depth: 0
+
+      - name: Configure Git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Fetch upstream main and tags
+        run: |
+          git remote add upstream "$UPSTREAM_REPOSITORY"
+          git fetch --prune --tags upstream main
+
+      - name: Prepare and validate sync branch
+        id: sync
+        run: |
+          if git merge-base --is-ancestor upstream/main "origin/$EXTENSION_BRANCH"; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "The extension branch already contains upstream/main."
+            exit 0
+          fi
+
+          sync_branch="automation/upstream-sync-${GITHUB_RUN_ID}"
+          git switch --create "$sync_branch" "origin/$EXTENSION_BRANCH"
+          git merge --no-edit --no-ff upstream/main
+          git diff --check
+
+          cmake -S firmware/tests -B "$RUNNER_TEMP/stackchan-tests"
+          cmake --build "$RUNNER_TEMP/stackchan-tests" --parallel
+          ctest --test-dir "$RUNNER_TEMP/stackchan-tests" --output-on-failure
+
+          git push origin "HEAD:$sync_branch"
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+          echo "branch=$sync_branch" >> "$GITHUB_OUTPUT"
+
+      - name: Open review PR
+        if: steps.sync.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SYNC_BRANCH: ${{ steps.sync.outputs.branch }}
+        run: |
+          gh pr create \
+            --base "$EXTENSION_BRANCH" \
+            --head "$SYNC_BRANCH" \
+            --title "chore: sync StackChan upstream" \
+            --body "Automated upstream sync from m5stack/StackChan. The branch was merged without conflict, passed git diff --check and the host CMake tests. Review firmware changes before merging; this workflow never flashes hardware."
