@@ -41,9 +41,17 @@ jobs:
       - name: Prepare and validate sync branch
         id: sync
         run: |
+          run_host_tests() {
+            cmake -S firmware/tests -B "$RUNNER_TEMP/stackchan-tests"
+            cmake --build "$RUNNER_TEMP/stackchan-tests" --parallel
+            ctest --test-dir "$RUNNER_TEMP/stackchan-tests" --output-on-failure
+          }
+
           if git merge-base --is-ancestor upstream/main "origin/$EXTENSION_BRANCH"; then
+            git diff --check
+            run_host_tests
             echo "changed=false" >> "$GITHUB_OUTPUT"
-            echo "The extension branch already contains upstream/main."
+            echo "The extension branch already contains upstream/main; baseline validation passed."
             exit 0
           fi
 
@@ -51,10 +59,7 @@ jobs:
           git switch --create "$sync_branch" "origin/$EXTENSION_BRANCH"
           git merge --no-edit --no-ff upstream/main
           git diff --check
-
-          cmake -S firmware/tests -B "$RUNNER_TEMP/stackchan-tests"
-          cmake --build "$RUNNER_TEMP/stackchan-tests" --parallel
-          ctest --test-dir "$RUNNER_TEMP/stackchan-tests" --output-on-failure
+          run_host_tests
 
           echo "changed=true" >> "$GITHUB_OUTPUT"
           echo "branch=$sync_branch" >> "$GITHUB_OUTPUT"
