@@ -61,6 +61,12 @@ prueba de rollback verificable.
 
 ## Flujo de actualización
 
+El respaldo físico previo está definido en
+[`FACTORY_BACKUP_ROLLBACK_RUNBOOK.md`](FACTORY_BACKUP_ROLLBACK_RUNBOOK.md). Es
+un gate previo, no un paso automático: hasta tener dump/hash/copia
+independiente y una ruta de restauración revisada, no se ejecutan comandos de
+escritura sobre el CoreS3.
+
 El clon original permanece como referencia local. Esta copia de trabajo tiene
 la rama `codex/timothee-factory-1.6.0`, el remoto `origin` apuntando por SSH al
 fork personal `ssh://git@ssh.github.com:443/danielAvalos/StackChan.git` y el remoto
