@@ -12,6 +12,10 @@ permissions:
 jobs:
   sync:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+    concurrency:
+      group: stackchan-upstream-sync
+      cancel-in-progress: false
     env:
       EXTENSION_BRANCH: codex/timothee-factory-1.6.0
       UPSTREAM_REPOSITORY: https://github.com/m5stack/StackChan.git
@@ -22,6 +26,7 @@ jobs:
         with:
           ref: codex/timothee-factory-1.6.0
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Configure Git identity
         run: |
@@ -51,16 +56,20 @@ jobs:
           cmake --build "$RUNNER_TEMP/stackchan-tests" --parallel
           ctest --test-dir "$RUNNER_TEMP/stackchan-tests" --output-on-failure
 
-          git push origin "HEAD:$sync_branch"
           echo "changed=true" >> "$GITHUB_OUTPUT"
           echo "branch=$sync_branch" >> "$GITHUB_OUTPUT"
 
-      - name: Open review PR
+      # Do not expose the write-capable GitHub token while upstream code is
+      # fetched, merged or built. The only commands after authentication are
+      # the literal branch push and PR creation below.
+      - name: Publish review branch and open PR
         if: steps.sync.outputs.changed == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           SYNC_BRANCH: ${{ steps.sync.outputs.branch }}
         run: |
+          gh auth setup-git
+          git push origin "HEAD:$SYNC_BRANCH"
           gh pr create \
             --base "$EXTENSION_BRANCH" \
             --head "$SYNC_BRANCH" \
