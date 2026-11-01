@@ -2,9 +2,10 @@
 
 Este runbook protege el firmware y la configuración de fábrica antes de
 cualquier prueba de Timothée. No se ejecutó sobre el robot. El propietario
-reporta actualmente la versión `1.6.0`, pero la identidad exacta del binario no
-ha sido releída ni hasheada por este repositorio; el manifiesto debe registrar
-la versión que se lea del dispositivo justo antes de una operación física.
+reporta actualmente la versión `1.6.0` (existen registros históricos de
+`1.5.1`), pero la identidad exacta del binario no ha sido releída ni hasheada
+por este repositorio; el manifiesto debe registrar la versión que se lea del
+dispositivo justo antes de una operación física.
 
 ## Invariantes
 
