@@ -76,9 +76,15 @@ propios delante de ese punto; no se requiere merge de upstream. `git diff
 --check upstream/main...HEAD` pasa. El entorno local no tiene CMake, por lo que
 el test host `timothee_expression_test` se compiló directamente con Apple
 Clang/C++17 y pasó; el workflow mantiene CMake/CTest como gate autoritativo en
-CI. La publicación SSH de la rama al fork `danielAvalos/StackChan` pasó y dejó
-el remoto en `1d90410`; la URL local usa `ssh.github.com:443` para evitar el
-cierre de `github.com:443`.
+CI. La primera publicación SSH de la rama al fork `danielAvalos/StackChan`
+dejó el remoto en `1d90410`; las actualizaciones posteriores mantuvieron la
+rama sincronizada. La URL local usa `ssh.github.com:443` para evitar el
+cierre de `github.com:443`. Después, el workflow remoto
+`Sync StackChan upstream` ejecutó checkout, fetch, CMake, build y CTest para
+`03ccee7f14b8ef5c34e8c1569fc58320e2828078` y terminó `success` en el run
+[`41324206470`](https://github.com/danielAvalos/StackChan/actions/runs/41324206470);
+la publicación de una rama de revisión fue correctamente omitida porque
+upstream ya estaba contenido.
 
 Antes de integrar cambios de upstream:
 
