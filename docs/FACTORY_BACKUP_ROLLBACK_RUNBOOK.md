@@ -47,6 +47,18 @@ Después, copiar el conjunto a dos destinos independientes, por ejemplo un
 disco externo y un repositorio de evidencias fuera del checkout. No publicar
 el dump: puede contener NVS, identidad, pairing o datos privados.
 
+Cuando el conjunto esté reunido, crear un `manifest.json` con el esquema
+`stackchan-factory-preservation` y verificarlo sin tocar el dispositivo:
+
+```sh
+node tools/verify_factory_backup.mjs /ruta/al/respaldo
+```
+
+La herramienta exige artefactos `factory-flash`, `microSD-image` y
+`esptool-report`, comprueba tamaño y SHA-256 mediante streaming, y rechaza
+traversal, symlinks fuera del directorio, duplicados y archivos faltantes. No
+ejecuta `esptool`, no abre puertos serie y no contiene comandos de escritura.
+
 ## Respaldo de la microSD de 16 GB
 
 La tarjeta se trata como almacenamiento auxiliar, no como firmware arrancable.
