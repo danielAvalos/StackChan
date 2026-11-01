@@ -75,6 +75,13 @@ Luego se actualiza una rama de sincronización, se ejecutan las pruebas host,
 se construye el firmware y solo después se prueba en hardware. Nunca se
 actualiza directamente el dispositivo como parte de un merge.
 
+El workflow `.github/workflows/upstream-sync.yml` automatiza esta disciplina
+cada lunes o bajo `workflow_dispatch`: parte de esta rama, trae `upstream/main`,
+detiene el proceso ante conflictos, ejecuta `git diff --check` y las pruebas
+CMake host, y publica una rama `automation/upstream-sync-*` para revisión. No
+hace merge automático, no publica secretos y no ejecuta ningún comando de
+flash/deploy sobre hardware.
+
 ## Puertas antes de WSS físico
 
 1. Contrato semántico host y firmware con pruebas.
