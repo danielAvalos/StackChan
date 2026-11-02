@@ -23,6 +23,7 @@ test('upstream sync keeps validation read-only and isolates publication authorit
   assert.match(syncSection, /git bundle create/);
   assert.match(syncSection, /actions\/upload-artifact@v4/);
   assert.match(publishSection, /needs: sync/);
+  assert.match(publishSection, /persist-credentials: false/);
   assert.match(publishSection, /permissions:\n      contents: write\n      pull-requests: write/);
   assert.match(publishSection, /git bundle verify/);
   assert.match(publishSection, /git push origin "\$sync_sha:refs\/heads\/\$SYNC_BRANCH"/);

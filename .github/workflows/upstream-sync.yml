@@ -136,6 +136,7 @@ jobs:
         with:
           ref: codex/timothee-factory-1.6.0
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Download verified sync bundle
         uses: actions/download-artifact@v4
