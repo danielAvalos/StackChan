@@ -27,7 +27,7 @@ jobs:
 
     steps:
       - name: Checkout extension branch
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af6772625 # v4.4.0
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           ref: codex/timothee-factory-1.6.0
           fetch-depth: 0
@@ -132,7 +132,7 @@ jobs:
 
     steps:
       - name: Checkout extension branch
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af6772625 # v4.4.0
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           ref: codex/timothee-factory-1.6.0
           fetch-depth: 0
