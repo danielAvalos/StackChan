@@ -77,7 +77,7 @@ y confirmar la autenticación Git para GitHub; no se publicó ningún cambio en
 
 Auditoría local del 2026-11-02: `git fetch --prune --tags upstream main` dejó
 `upstream/main` en `f901cc2` (`chore: sync wecom-digest-forward workflow`). La
-rama `codex/timothee-factory-1.6.0` está `0` commits detrás y `28` commits
+rama `codex/timothee-factory-1.6.0` está `0` commits detrás y `34` commits
 propios delante de ese punto; no se requiere merge de upstream. `git diff
 --check upstream/main...HEAD` pasa. La prueba host `timothee_expression_test`
 se compiló con Apple Clang/C++17 y pasó `2/2`, incluyendo 80.000 validaciones
@@ -97,7 +97,11 @@ componentes ESP-IDF y build ESP32-S3 en el segundo contenedor sin red,
 capacidades Linux ni credenciales.
 El workflow mantiene CMake/CTest y el build ESP-IDF como gates autoritativos;
 la publicación SSH usa `ssh.github.com:443` y la rama remota coincide con
-`d39fe47`.
+`4374eb6`. Las 11 pruebas actuales de `tools/*.test.mjs` pasan, incluyendo el
+guard que exige SHA inmutables en todos los workflows. El run remoto nuevo
+[`41486007844`](https://github.com/danielAvalos/StackChan/actions/runs/41486007844)
+seguía `Waiting`, detrás del run anterior `41484672561` aún `In progress` al
+momento de esta auditoría.
 
 El manifiesto `docs/factory-firmware-artifacts.json` fija los artefactos oficiales
 M5Burner `StackChan-UserDemo` V1.6.0 y V1.5.1 por URL, tamaño, SHA-256 y destino
@@ -107,7 +111,7 @@ herramientas de fábrica pasaron `9/9` y la verificación de ambos artefactos
 aislados pasó `2/2`. El workflow ejecuta este gate junto con la validación de
 preservación de fábrica.
 
-La ejecución autoritativa más reciente es
+La ejecución autoritativa histórica más reciente completada es
 [`41479295867`](https://github.com/danielAvalos/StackChan/actions/runs/41479295867)
 para `d39fe47`: terminó `success` e incluyó `git diff --check`, las pruebas de
 las herramientas de fábrica, CMake/CTest del host y la compilación ESP32-S3
