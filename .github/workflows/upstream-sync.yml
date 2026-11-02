@@ -45,7 +45,8 @@ jobs:
         run: |
           node --check tools/verify_factory_backup.mjs
           node --check tools/create_factory_manifest.mjs
-          node --test tools/create_factory_manifest.test.mjs tools/verify_factory_backup.test.mjs
+          node --check tools/verify_factory_release.mjs
+          node --test tools/create_factory_manifest.test.mjs tools/verify_factory_backup.test.mjs tools/verify_factory_release.test.mjs
 
       - name: Prepare and validate sync branch
         id: sync

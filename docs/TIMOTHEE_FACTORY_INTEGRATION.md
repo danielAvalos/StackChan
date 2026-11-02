@@ -99,6 +99,13 @@ El workflow mantiene CMake/CTest y el build ESP-IDF como gates autoritativos;
 la publicación SSH usa `ssh.github.com:443` y la rama remota coincide con
 `494bf73`.
 
+El manifiesto `docs/factory-firmware-artifacts.json` fija los artefactos oficiales
+M5Burner `StackChan-UserDemo` V1.6.0 y V1.5.1 por URL, tamaño, SHA-256 y destino
+ESP32-S3/16MB. `tools/verify_factory_release.mjs` compara esos campos contra un
+archivo local y no descarga, flashea ni ejecuta firmware; su prueba pasó `3/3`
+y la verificación de ambos artefactos aislados pasó `2/2`. El workflow ejecuta
+este gate junto con la validación de preservación de fábrica.
+
 La extensión de política host-testable quedó publicada en el fork como
 `04e34a5` (`test(timothee): cover expression bridge policy gate`). El cambio
 no instancia el bridge desde el arranque, no agrega red/OTA/NVS y no modifica

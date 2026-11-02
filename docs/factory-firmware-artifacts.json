@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "kind": "stackchan-official-firmware-artifacts",
+  "product": "StackChan-UserDemo",
+  "source": "M5Burner official catalog",
+  "artifacts": [
+    {
+      "version": "1.6.0",
+      "publishedAt": "2026-10-29",
+      "file": "e373bd2913215ad0f47e152fe890dc92.bin",
+      "url": "https://m5burner-cdn.m5stack.com/firmware/e373bd2913215ad0f47e152fe890dc92.bin",
+      "sizeBytes": 12783789,
+      "sha256": "245bc9af0a5dff0388017073d7f571fdd03268a0df71bc62c8de7567f8e32866",
+      "chip": "esp32s3",
+      "flashSizeMB": 16
+    },
+    {
+      "version": "1.5.1",
+      "publishedAt": "2026-07-31",
+      "file": "746f9662f48ac465cccf49bcad941414.bin",
+      "url": "https://m5burner-cdn.m5stack.com/firmware/746f9662f48ac465cccf49bcad941414.bin",
+      "sizeBytes": 12783789,
+      "sha256": "411578a2ebca2cfe3541fdc32aeddbc4703cf912a5daa7e1253f69306d6e1d87",
+      "chip": "esp32s3",
+      "flashSizeMB": 16
+    }
+  ]
+}
