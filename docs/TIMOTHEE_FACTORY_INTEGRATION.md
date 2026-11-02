@@ -77,7 +77,7 @@ y confirmar la autenticación Git para GitHub; no se publicó ningún cambio en
 
 Auditoría local del 2026-11-02: `git fetch --prune --tags upstream main` dejó
 `upstream/main` en `f901cc2` (`chore: sync wecom-digest-forward workflow`). La
-rama `codex/timothee-factory-1.6.0` está `0` commits detrás y `23` commits
+rama `codex/timothee-factory-1.6.0` está `0` commits detrás y `25` commits
 propios delante de ese punto; no se requiere merge de upstream. `git diff
 --check upstream/main...HEAD` pasa. La prueba host `timothee_expression_test`
 se compiló con Apple Clang/C++17 y pasó `2/2`, incluyendo 80.000 validaciones
@@ -90,11 +90,14 @@ abrió el puerto USB y no ejecutó flash, erase, OTA, NVS ni deploy. La
 comparación de una compilación limpia y otra incremental mostró que ESP-IDF
 incrusta `__DATE__`/`__TIME__` en el descriptor de aplicación; por eso el
 workflow fija `SOURCE_DATE_EPOCH` al timestamp del commit antes de compilar,
-para que el mismo commit tenga un artefacto reproducible. La confirmación
-remota de esa propiedad queda pendiente de una ejecución CI posterior.
+para que el mismo commit tenga un artefacto reproducible. El run remoto de
+GitHub Actions [`41476065305`](https://github.com/danielAvalos/StackChan/actions/runs/41476065305)
+terminó `success` para `6cebc9e`, incluyendo host CMake/CTest, resolución de
+componentes ESP-IDF y build ESP32-S3 en el segundo contenedor sin red,
+capacidades Linux ni credenciales.
 El workflow mantiene CMake/CTest y el build ESP-IDF como gates autoritativos;
 la publicación SSH usa `ssh.github.com:443` y la rama remota coincide con
-`f41bf71`.
+`6cebc9e`.
 
 La extensión de política host-testable quedó publicada en el fork como
 `04e34a5` (`test(timothee): cover expression bridge policy gate`). El cambio
