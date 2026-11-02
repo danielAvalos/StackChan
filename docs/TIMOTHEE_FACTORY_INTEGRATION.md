@@ -77,7 +77,7 @@ y confirmar la autenticación Git para GitHub; no se publicó ningún cambio en
 
 Auditoría local del 2026-11-02: `git fetch --prune --tags upstream main` dejó
 `upstream/main` en `f901cc2` (`chore: sync wecom-digest-forward workflow`). La
-rama `codex/timothee-factory-1.6.0` está `0` commits detrás y `26` commits
+rama `codex/timothee-factory-1.6.0` está `0` commits detrás y `28` commits
 propios delante de ese punto; no se requiere merge de upstream. `git diff
 --check upstream/main...HEAD` pasa. La prueba host `timothee_expression_test`
 se compiló con Apple Clang/C++17 y pasó `2/2`, incluyendo 80.000 validaciones
@@ -97,14 +97,21 @@ componentes ESP-IDF y build ESP32-S3 en el segundo contenedor sin red,
 capacidades Linux ni credenciales.
 El workflow mantiene CMake/CTest y el build ESP-IDF como gates autoritativos;
 la publicación SSH usa `ssh.github.com:443` y la rama remota coincide con
-`494bf73`.
+`d39fe47`.
 
 El manifiesto `docs/factory-firmware-artifacts.json` fija los artefactos oficiales
 M5Burner `StackChan-UserDemo` V1.6.0 y V1.5.1 por URL, tamaño, SHA-256 y destino
 ESP32-S3/16MB. `tools/verify_factory_release.mjs` compara esos campos contra un
-archivo local y no descarga, flashea ni ejecuta firmware; su prueba pasó `3/3`
-y la verificación de ambos artefactos aislados pasó `2/2`. El workflow ejecuta
-este gate junto con la validación de preservación de fábrica.
+archivo local y no descarga, flashea ni ejecuta firmware; las pruebas de las
+herramientas de fábrica pasaron `9/9` y la verificación de ambos artefactos
+aislados pasó `2/2`. El workflow ejecuta este gate junto con la validación de
+preservación de fábrica.
+
+La ejecución autoritativa más reciente es
+[`41479295867`](https://github.com/danielAvalos/StackChan/actions/runs/41479295867)
+para `d39fe47`: terminó `success` e incluyó `git diff --check`, las pruebas de
+las herramientas de fábrica, CMake/CTest del host y la compilación ESP32-S3
+aislada. No ejecutó flash, deploy, monitor, USB ni credenciales.
 
 La extensión de política host-testable quedó publicada en el fork como
 `04e34a5` (`test(timothee): cover expression bridge policy gate`). El cambio
