@@ -77,7 +77,7 @@ y confirmar la autenticación Git para GitHub; no se publicó ningún cambio en
 
 Auditoría local del 2026-11-02: `git fetch --prune --tags upstream main` dejó
 `upstream/main` en `f901cc2` (`chore: sync wecom-digest-forward workflow`). La
-rama `codex/timothee-factory-1.6.0` está `0` commits detrás y `25` commits
+rama `codex/timothee-factory-1.6.0` está `0` commits detrás y `26` commits
 propios delante de ese punto; no se requiere merge de upstream. `git diff
 --check upstream/main...HEAD` pasa. La prueba host `timothee_expression_test`
 se compiló con Apple Clang/C++17 y pasó `2/2`, incluyendo 80.000 validaciones
@@ -97,7 +97,7 @@ componentes ESP-IDF y build ESP32-S3 en el segundo contenedor sin red,
 capacidades Linux ni credenciales.
 El workflow mantiene CMake/CTest y el build ESP-IDF como gates autoritativos;
 la publicación SSH usa `ssh.github.com:443` y la rama remota coincide con
-`6cebc9e`.
+`494bf73`.
 
 La extensión de política host-testable quedó publicada en el fork como
 `04e34a5` (`test(timothee): cover expression bridge policy gate`). El cambio
