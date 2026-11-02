@@ -27,7 +27,7 @@ jobs:
 
     steps:
       - name: Checkout extension branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af6772625 # v4.4.0
         with:
           ref: codex/timothee-factory-1.6.0
           fetch-depth: 0
@@ -111,7 +111,7 @@ jobs:
 
       - name: Upload verified sync bundle
         if: steps.sync.outputs.changed == 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: stackchan-sync-bundle-${{ github.run_id }}
           path: ${{ runner.temp }}/stackchan-sync.bundle
@@ -132,14 +132,14 @@ jobs:
 
     steps:
       - name: Checkout extension branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af6772625 # v4.4.0
         with:
           ref: codex/timothee-factory-1.6.0
           fetch-depth: 0
           persist-credentials: false
 
       - name: Download verified sync bundle
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: stackchan-sync-bundle-${{ github.run_id }}
           path: ${{ runner.temp }}/stackchan-sync
