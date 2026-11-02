@@ -35,6 +35,12 @@ struct Expression {
     uint32_t duration_ms;
 };
 
+struct LedColor {
+    uint8_t red;
+    uint8_t green;
+    uint8_t blue;
+};
+
 enum class BridgeStatus : uint8_t {
     Disabled = 0,
     Applied,
@@ -58,6 +64,9 @@ std::string_view semanticStateName(SemanticState state);
 
 // Returns the bounded default profile currently defined by the Timothee MOD.
 Expression expressionFor(SemanticState state);
+
+// Pure brightness scaling shared by host tests and the owner-loop bridge.
+LedColor ledColorFor(const Expression& expression);
 
 // Pure fail-closed gate used by the device bridge. Keeping this decision
 // independent of StackChan makes it host-testable without the ESP-IDF tree.

@@ -25,6 +25,10 @@ int main()
     assert(expression.blue == 100);
     assert(expression.brightness_percent == 40);
     assert(expression.duration_ms == 500);
+    const auto color = timothee::ledColorFor(expression);
+    assert(color.red == 12);
+    assert(color.green == 84);
+    assert(color.blue == 40);
 
     const timothee::BridgePolicy default_policy;
     assert(timothee::validateBridgeRequest(default_policy, "thinking", 500, true)

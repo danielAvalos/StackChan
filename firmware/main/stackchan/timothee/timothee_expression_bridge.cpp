@@ -29,11 +29,9 @@ BridgeStatus ExpressionBridge::apply(stackchan::StackChan& stackchan, std::strin
         return BridgeStatus::DurationOutOfRange;
     }
 
-    const auto scale = [brightness = expression.brightness_percent](uint8_t channel) {
-        return static_cast<uint8_t>((static_cast<uint16_t>(channel) * brightness) / 100u);
-    };
-    stackchan.leftNeonLight().setColor(scale(expression.red), scale(expression.green), scale(expression.blue));
-    stackchan.rightNeonLight().setColor(scale(expression.red), scale(expression.green), scale(expression.blue));
+    const LedColor color = ledColorFor(expression);
+    stackchan.leftNeonLight().setColor(color.red, color.green, color.blue);
+    stackchan.rightNeonLight().setColor(color.red, color.green, color.blue);
     stackchan.addModifier(std::make_unique<stackchan::TimedEmotionModifier>(expression.emotion, effective_duration));
     return BridgeStatus::Applied;
 }

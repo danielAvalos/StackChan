@@ -73,6 +73,14 @@ Expression expressionFor(SemanticState state)
     }
 }
 
+LedColor ledColorFor(const Expression& expression)
+{
+    const auto scale = [brightness = expression.brightness_percent](uint8_t channel) {
+        return static_cast<uint8_t>((static_cast<uint16_t>(channel) * brightness) / 100u);
+    };
+    return { scale(expression.red), scale(expression.green), scale(expression.blue) };
+}
+
 BridgeStatus validateBridgeRequest(const BridgePolicy& policy, std::string_view semantic_state,
                                    uint32_t duration_ms, bool avatar_available)
 {
