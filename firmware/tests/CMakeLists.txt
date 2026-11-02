@@ -28,4 +28,7 @@ target_include_directories(timothee_expression_test PRIVATE
 
 target_compile_features(timothee_expression_test PRIVATE cxx_std_17)
 
+find_package(Threads REQUIRED)
+target_link_libraries(timothee_expression_test PRIVATE Threads::Threads)
+
 add_test(NAME timothee_expression_test COMMAND $<TARGET_FILE:timothee_expression_test>)

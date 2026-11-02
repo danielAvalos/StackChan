@@ -1,7 +1,10 @@
 #include "stackchan/timothee/timothee_expression.h"
 
+#include <atomic>
 #include <cassert>
 #include <string_view>
+#include <thread>
+#include <vector>
 
 int main()
 {
@@ -36,6 +39,32 @@ int main()
     const timothee::BridgePolicy invalid_policy{ true, 0 };
     assert(timothee::validateBridgeRequest(invalid_policy, "thinking", 500, true)
            == timothee::BridgeStatus::DurationOutOfRange);
+
+    // The pure policy gate is reentrant. Mutable avatar/modifier state is
+    // intentionally excluded and must be dispatched by the owner/main loop.
+    std::atomic<bool> concurrent_failure{ false };
+    std::vector<std::thread> workers;
+    workers.reserve(8);
+    for (int worker = 0; worker < 8; ++worker) {
+        workers.emplace_back([&]() {
+            for (int iteration = 0; iteration < 10000; ++iteration) {
+                SemanticState local_state = SemanticState::Neutral;
+                if (!timothee::parseSemanticState("speaking", local_state)
+                    || local_state != SemanticState::Speaking
+                    || timothee::validateBridgeRequest(enabled_policy, "speaking", 250, true)
+                        != timothee::BridgeStatus::Applied
+                    || timothee::validateBridgeRequest(enabled_policy, "execute_genesis", 250, true)
+                        != timothee::BridgeStatus::InvalidState) {
+                    concurrent_failure.store(true, std::memory_order_relaxed);
+                    return;
+                }
+            }
+        });
+    }
+    for (auto& worker_thread : workers) {
+        worker_thread.join();
+    }
+    assert(!concurrent_failure.load(std::memory_order_relaxed));
 
     return 0;
 }

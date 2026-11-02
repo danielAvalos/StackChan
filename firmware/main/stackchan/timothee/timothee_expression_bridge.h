@@ -20,6 +20,9 @@ namespace timothee {
  *
  * It intentionally has no network, JSON, filesystem, credential, OTA or
  * Mission/Genesis dependency. The app does not instantiate it by default.
+ * `apply` must run on the StackChan owner/main loop because the avatar and
+ * modifier list are mutable firmware state; callers may run the pure
+ * `validateBridgeRequest` gate concurrently before dispatching to that loop.
  */
 class ExpressionBridge {
 public:
