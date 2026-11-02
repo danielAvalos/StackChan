@@ -56,11 +56,22 @@ jobs:
             ctest --test-dir "$RUNNER_TEMP/stackchan-tests" --output-on-failure
           }
 
+          run_firmware_build() {
+            # Build-only gate. The container has no USB device and this command
+            # deliberately excludes every flash/deploy/monitor operation.
+            docker run --rm \
+              --mount "type=bind,src=$GITHUB_WORKSPACE,dst=/work" \
+              --workdir /work/firmware \
+              espressif/idf:v5.5.4 \
+              bash -lc 'python3 fetch_repos.py && idf.py build'
+          }
+
           if git merge-base --is-ancestor upstream/main "origin/$EXTENSION_BRANCH"; then
             git diff --check
             run_host_tests
+            run_firmware_build
             echo "changed=false" >> "$GITHUB_OUTPUT"
-            echo "The extension branch already contains upstream/main; baseline validation passed."
+            echo "The extension branch already contains upstream/main; baseline and firmware-build validation passed."
             exit 0
           fi
 
@@ -69,6 +80,7 @@ jobs:
           git merge --no-edit --no-ff upstream/main
           git diff --check
           run_host_tests
+          run_firmware_build
 
           echo "changed=true" >> "$GITHUB_OUTPUT"
           echo "branch=$sync_branch" >> "$GITHUB_OUTPUT"

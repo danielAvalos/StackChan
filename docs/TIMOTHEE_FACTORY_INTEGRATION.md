@@ -75,16 +75,21 @@ remoto ya fue creado. La rama se publicó después de revisar la sincronización
 y confirmar la autenticación Git para GitHub; no se publicó ningún cambio en
 `upstream`.
 
-Auditoría local del 2026-11-01: `git fetch --prune --tags upstream main` dejó
+Auditoría local del 2026-11-02: `git fetch --prune --tags upstream main` dejó
 `upstream/main` en `f901cc2` (`chore: sync wecom-digest-forward workflow`). La
 rama `codex/timothee-factory-1.6.0` está `0` commits detrás y `5` commits
 propios delante de ese punto; no se requiere merge de upstream. `git diff
---check upstream/main...HEAD` pasa. El entorno local no tiene CMake, por lo que
-el test host `timothee_expression_test` se compiló directamente con Apple
-Clang/C++17 y pasó; ahora cubre también la política fail-closed del bridge
-(`disabled`, vocabulario cerrado, avatar ausente y duración inválida). El
-workflow mantiene CMake/CTest como gate autoritativo en
-CI. La primera publicación SSH de la rama al fork `danielAvalos/StackChan`
+--check upstream/main...HEAD` pasa. La prueba host `timothee_expression_test`
+se compiló con Apple Clang/C++17 y pasó; ahora cubre también la política
+fail-closed del bridge (`disabled`, vocabulario cerrado, avatar ausente y
+duración inválida). En un clon temporal aislado del commit publicado
+`8babfb0`, ESP-IDF `v5.5.4` completó el build ESP32-S3 `2498/2498`, con
+`stack-chan.bin` de 3,739,552 bytes y SHA-256
+`b37604699476c1dcbb21c528cd7cbe02d035c7c6be6a7a3ef73004ef3baef862`;
+`esptool image_info` validó su checksum y validation hash offline. El build
+no abrió el puerto USB y no ejecutó flash, erase, OTA, NVS ni deploy. El
+workflow mantiene CMake/CTest y ahora también el build ESP-IDF como gates
+autoritativos en CI. La primera publicación SSH de la rama al fork `danielAvalos/StackChan`
 dejó el remoto en `1d90410`; las actualizaciones posteriores mantuvieron la
 rama sincronizada. La URL local usa `ssh.github.com:443` para evitar el
 cierre de `github.com:443`. Después, el workflow remoto
@@ -115,9 +120,11 @@ actualiza directamente el dispositivo como parte de un merge.
 El workflow `.github/workflows/upstream-sync.yml` automatiza esta disciplina
 cada lunes o bajo `workflow_dispatch`: parte de esta rama, trae `upstream/main`,
 detiene el proceso ante conflictos, ejecuta `git diff --check` y las pruebas
-CMake host, y publica una rama `automation/upstream-sync-*` para revisión. No
-hace merge automático, no publica secretos y no ejecuta ningún comando de
-flash/deploy sobre hardware.
+CMake host, ejecuta un build ESP32-S3 dentro de `espressif/idf:v5.5.4`, y
+publica una rama `automation/upstream-sync-*` para revisión. No hace merge
+automático, no publica secretos y no ejecuta ningún comando de
+flash/deploy/monitor sobre hardware. El contenedor recibe solo el checkout
+del workflow y no recibe credenciales de producción.
 
 ## Puertas antes de WSS físico
 
