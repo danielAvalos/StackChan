@@ -29,6 +29,15 @@ int main()
     assert(color.red == 12);
     assert(color.green == 84);
     assert(color.blue == 40);
+    auto untrusted_brightness = expression;
+    untrusted_brightness.red = 255;
+    untrusted_brightness.green = 255;
+    untrusted_brightness.blue = 255;
+    untrusted_brightness.brightness_percent = 255;
+    const auto bounded_color = timothee::ledColorFor(untrusted_brightness);
+    assert(bounded_color.red == 255);
+    assert(bounded_color.green == 255);
+    assert(bounded_color.blue == 255);
 
     const timothee::BridgePolicy default_policy;
     assert(timothee::validateBridgeRequest(default_policy, "thinking", 500, true)

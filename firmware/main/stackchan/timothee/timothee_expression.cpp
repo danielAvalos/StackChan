@@ -75,7 +75,8 @@ Expression expressionFor(SemanticState state)
 
 LedColor ledColorFor(const Expression& expression)
 {
-    const auto scale = [brightness = expression.brightness_percent](uint8_t channel) {
+    const uint8_t brightness = expression.brightness_percent > 100 ? 100 : expression.brightness_percent;
+    const auto scale = [brightness](uint8_t channel) {
         return static_cast<uint8_t>((static_cast<uint16_t>(channel) * brightness) / 100u);
     };
     return { scale(expression.red), scale(expression.green), scale(expression.blue) };
