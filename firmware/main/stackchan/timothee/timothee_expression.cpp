@@ -73,4 +73,33 @@ Expression expressionFor(SemanticState state)
     }
 }
 
+BridgeStatus validateBridgeRequest(const BridgePolicy& policy, std::string_view semantic_state,
+                                   uint32_t duration_ms, bool avatar_available)
+{
+    if (!policy.enabled) {
+        return BridgeStatus::Disabled;
+    }
+    if (policy.max_duration_ms == 0) {
+        return BridgeStatus::DurationOutOfRange;
+    }
+
+    SemanticState state = SemanticState::Neutral;
+    if (!parseSemanticState(semantic_state, state)) {
+        return BridgeStatus::InvalidState;
+    }
+    if (!avatar_available) {
+        return BridgeStatus::AvatarUnavailable;
+    }
+
+    const uint32_t effective_duration = duration_ms == 0 ? expressionFor(state).duration_ms : duration_ms;
+    if (effective_duration == 0) {
+        return BridgeStatus::DurationRequired;
+    }
+    if (effective_duration > policy.max_duration_ms) {
+        return BridgeStatus::DurationOutOfRange;
+    }
+
+    return BridgeStatus::Applied;
+}
+
 }  // namespace timothee

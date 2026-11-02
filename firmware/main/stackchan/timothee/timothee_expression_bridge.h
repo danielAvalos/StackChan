@@ -13,22 +13,6 @@
 
 namespace timothee {
 
-enum class BridgeStatus : uint8_t {
-    Disabled = 0,
-    Applied,
-    InvalidState,
-    AvatarUnavailable,
-    DurationRequired,
-    DurationOutOfRange,
-};
-
-struct BridgePolicy {
-    // Factory firmware remains unchanged unless an owner explicitly enables
-    // this adapter at its future integration point.
-    bool enabled = false;
-    uint32_t max_duration_ms = 6000;
-};
-
 /**
  * Small, provider-free factory adapter. It accepts only the closed semantic
  * vocabulary and queues the existing timed emotion modifier, which restores

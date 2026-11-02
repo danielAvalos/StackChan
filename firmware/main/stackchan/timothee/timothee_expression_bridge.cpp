@@ -12,20 +12,13 @@ namespace timothee {
 BridgeStatus ExpressionBridge::apply(stackchan::StackChan& stackchan, std::string_view semantic_state,
                                       uint32_t duration_ms) const
 {
-    if (!_policy.enabled) {
-        return BridgeStatus::Disabled;
-    }
-    if (_policy.max_duration_ms == 0) {
-        return BridgeStatus::DurationOutOfRange;
+    const BridgeStatus decision = validateBridgeRequest(_policy, semantic_state, duration_ms, stackchan.hasAvatar());
+    if (decision != BridgeStatus::Applied) {
+        return decision;
     }
 
     SemanticState state = SemanticState::Neutral;
-    if (!parseSemanticState(semantic_state, state)) {
-        return BridgeStatus::InvalidState;
-    }
-    if (!stackchan.hasAvatar()) {
-        return BridgeStatus::AvatarUnavailable;
-    }
+    (void)parseSemanticState(semantic_state, state);
 
     const Expression expression = expressionFor(state);
     const uint32_t effective_duration = duration_ms == 0 ? expression.duration_ms : duration_ms;

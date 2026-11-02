@@ -23,5 +23,19 @@ int main()
     assert(expression.brightness_percent == 40);
     assert(expression.duration_ms == 500);
 
+    const timothee::BridgePolicy default_policy;
+    assert(timothee::validateBridgeRequest(default_policy, "thinking", 500, true)
+           == timothee::BridgeStatus::Disabled);
+
+    const timothee::BridgePolicy enabled_policy{ true, 6000 };
+    assert(timothee::validateBridgeRequest(enabled_policy, "execute_genesis", 500, true)
+           == timothee::BridgeStatus::InvalidState);
+    assert(timothee::validateBridgeRequest(enabled_policy, "thinking", 500, false)
+           == timothee::BridgeStatus::AvatarUnavailable);
+
+    const timothee::BridgePolicy invalid_policy{ true, 0 };
+    assert(timothee::validateBridgeRequest(invalid_policy, "thinking", 500, true)
+           == timothee::BridgeStatus::DurationOutOfRange);
+
     return 0;
 }

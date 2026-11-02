@@ -35,6 +35,22 @@ struct Expression {
     uint32_t duration_ms;
 };
 
+enum class BridgeStatus : uint8_t {
+    Disabled = 0,
+    Applied,
+    InvalidState,
+    AvatarUnavailable,
+    DurationRequired,
+    DurationOutOfRange,
+};
+
+struct BridgePolicy {
+    // Factory firmware remains unchanged unless an owner explicitly enables
+    // this adapter at its future integration point.
+    bool enabled = false;
+    uint32_t max_duration_ms = 6000;
+};
+
 // Returns false for unknown or untrusted input. No allocation is performed.
 bool parseSemanticState(std::string_view value, SemanticState& state);
 
@@ -42,5 +58,10 @@ std::string_view semanticStateName(SemanticState state);
 
 // Returns the bounded default profile currently defined by the Timothee MOD.
 Expression expressionFor(SemanticState state);
+
+// Pure fail-closed gate used by the device bridge. Keeping this decision
+// independent of StackChan makes it host-testable without the ESP-IDF tree.
+BridgeStatus validateBridgeRequest(const BridgePolicy& policy, std::string_view semantic_state,
+                                   uint32_t duration_ms, bool avatar_available);
 
 }  // namespace timothee
