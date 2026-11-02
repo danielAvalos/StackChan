@@ -81,7 +81,9 @@ rama `codex/timothee-factory-1.6.0` está `0` commits detrás y `5` commits
 propios delante de ese punto; no se requiere merge de upstream. `git diff
 --check upstream/main...HEAD` pasa. El entorno local no tiene CMake, por lo que
 el test host `timothee_expression_test` se compiló directamente con Apple
-Clang/C++17 y pasó; el workflow mantiene CMake/CTest como gate autoritativo en
+Clang/C++17 y pasó; ahora cubre también la política fail-closed del bridge
+(`disabled`, vocabulario cerrado, avatar ausente y duración inválida). El
+workflow mantiene CMake/CTest como gate autoritativo en
 CI. La primera publicación SSH de la rama al fork `danielAvalos/StackChan`
 dejó el remoto en `1d90410`; las actualizaciones posteriores mantuvieron la
 rama sincronizada. La URL local usa `ssh.github.com:443` para evitar el
@@ -91,6 +93,12 @@ cierre de `github.com:443`. Después, el workflow remoto
 [`41324206470`](https://github.com/danielAvalos/StackChan/actions/runs/41324206470);
 la publicación de una rama de revisión fue correctamente omitida porque
 upstream ya estaba contenido.
+
+La extensión de política host-testable quedó publicada en el fork como
+`04e34a5` (`test(timothee): cover expression bridge policy gate`). El cambio
+no instancia el bridge desde el arranque, no agrega red/OTA/NVS y no modifica
+el firmware instalado; solo separa la decisión pura para poder probarla sin
+descargar el árbol ESP-IDF.
 
 Antes de integrar cambios de upstream:
 

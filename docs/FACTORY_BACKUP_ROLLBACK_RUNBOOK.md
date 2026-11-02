@@ -1,11 +1,13 @@
-# Respaldo y rollback del StackChan factory (baseline reportado)
+# Respaldo y rollback del StackChan factory (baseline verificado)
 
 Este runbook protege el firmware y la configuración de fábrica antes de
-cualquier prueba de Timothée. No se ejecutó sobre el robot. El propietario
-reporta actualmente la versión `1.6.0` (existen registros históricos de
-`1.5.1`), pero la identidad exacta del binario no ha sido releída ni hasheada
-por este repositorio; el manifiesto debe registrar la versión que se lea del
-dispositivo justo antes de una operación física.
+cualquier prueba de Timothée. La preservación read-only del 2026-11-02
+identificó en el dump protegido un `ota_1` `stack-chan` `1.6.0` seleccionado y
+un `ota_0` `1.5.1` válido como rollback alterno. El dump tiene SHA-256
+`a949829dd25887a12919858c5784741995e5c5bf87bddee72109bead70a63d59` y el
+manifiesto local fue validado con `status=pass`. Esto sigue siendo evidencia
+estructural: no se ha ensayado una restauración física y no existe una imagen
+RAW de la microSD.
 
 ## Invariantes
 
