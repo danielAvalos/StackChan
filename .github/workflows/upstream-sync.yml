@@ -69,7 +69,7 @@ jobs:
               --mount "type=bind,src=$GITHUB_WORKSPACE,dst=/work" \
               --workdir /work/firmware \
               espressif/idf:v5.5.4 \
-              bash -lc 'python3 fetch_repos.py'
+              bash -lc 'set -euo pipefail; python3 fetch_repos.py; idf.py reconfigure'
 
             # Build-only gate. Deliberately excludes every
             # flash/deploy/monitor operation and blocks build-time egress.
