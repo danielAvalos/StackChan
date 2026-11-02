@@ -123,8 +123,10 @@ detiene el proceso ante conflictos, ejecuta `git diff --check` y las pruebas
 CMake host, ejecuta un build ESP32-S3 dentro de `espressif/idf:v5.5.4`, y
 publica una rama `automation/upstream-sync-*` para revisión. No hace merge
 automático, no publica secretos y no ejecuta ningún comando de
-flash/deploy/monitor sobre hardware. El contenedor recibe solo el checkout
-del workflow y no recibe credenciales de producción.
+flash/deploy/monitor sobre hardware. La descarga de dependencias y la
+compilación son pasos separados; el contenedor de compilación usa
+`--network none`, elimina capacidades Linux y recibe solo el checkout del
+workflow, sin credenciales de producción.
 
 ## Puertas antes de WSS físico
 

@@ -57,13 +57,24 @@ jobs:
           }
 
           run_firmware_build() {
-            # Build-only gate. The container has no USB device and this command
-            # deliberately excludes every flash/deploy/monitor operation.
+            # Fetch dependencies in the isolated CI workspace first. The actual
+            # compiler step has no network, no USB device and no credentials.
             docker run --rm \
               --mount "type=bind,src=$GITHUB_WORKSPACE,dst=/work" \
               --workdir /work/firmware \
               espressif/idf:v5.5.4 \
-              bash -lc 'python3 fetch_repos.py && idf.py build'
+              bash -lc 'python3 fetch_repos.py'
+
+            # Build-only gate. Deliberately excludes every
+            # flash/deploy/monitor operation and blocks build-time egress.
+            docker run --rm \
+              --network none \
+              --cap-drop ALL \
+              --security-opt no-new-privileges:true \
+              --mount "type=bind,src=$GITHUB_WORKSPACE,dst=/work" \
+              --workdir /work/firmware \
+              espressif/idf:v5.5.4 \
+              bash -lc 'idf.py build'
           }
 
           if git merge-base --is-ancestor upstream/main "origin/$EXTENSION_BRANCH"; then
