@@ -56,4 +56,3 @@ test('rejects a rollback proof that is not bound to the supplied flash', async (
     await rm(root, { recursive: true, force: true });
   }
 });
-
