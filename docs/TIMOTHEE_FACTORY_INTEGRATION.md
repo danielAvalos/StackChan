@@ -137,11 +137,16 @@ detiene el proceso ante conflictos, ejecuta `git diff --check` y las pruebas
 CMake host, ejecuta un build ESP32-S3 dentro de `espressif/idf:v5.5.4`, y
 publica una rama `automation/upstream-sync-*` para revisión. No hace merge
 automático, no publica secretos y no ejecuta ningún comando de
-flash/deploy/monitor sobre hardware. La descarga de dependencias y la
-compilación son pasos separados; el contenedor de compilación usa
-`--network none`, elimina capacidades Linux y recibe solo el checkout del
-workflow, sin credenciales de producción. `SOURCE_DATE_EPOCH` se deriva del
-commit que se está validando, no de entrada remota ni de texto de usuario.
+flash/deploy/monitor sobre hardware. La validación corre en un job con
+`contents: read`; el resultado se entrega como un bundle Git verificado a un
+job de publicación separado que es el único con `contents: write` y
+`pull-requests: write`. Ese job no trae upstream, compila ni ejecuta código del
+repositorio antes de publicar el bundle y abrir el PR. La descarga de
+dependencias y la compilación son pasos separados; el contenedor de
+compilación usa `--network none`, elimina capacidades Linux y recibe solo el
+checkout del workflow, sin credenciales de producción. `SOURCE_DATE_EPOCH` se
+deriva del commit que se está validando, no de entrada remota ni de texto de
+usuario.
 
 ## Puertas antes de WSS físico
 

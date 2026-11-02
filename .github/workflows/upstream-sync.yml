@@ -9,13 +9,15 @@ on:
     - cron: '17 3 * * 1'
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
 
 jobs:
   sync:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    outputs:
+      changed: ${{ steps.sync.outputs.changed }}
+      branch: ${{ steps.sync.outputs.branch }}
     concurrency:
       group: stackchan-upstream-sync
       cancel-in-progress: false
@@ -104,17 +106,63 @@ jobs:
           echo "changed=true" >> "$GITHUB_OUTPUT"
           echo "branch=$sync_branch" >> "$GITHUB_OUTPUT"
 
-      # Do not expose the write-capable GitHub token while upstream code is
-      # fetched, merged or built. The only commands after authentication are
-      # the literal branch push and PR creation below.
-      - name: Publish review branch and open PR
+          git bundle create "$RUNNER_TEMP/stackchan-sync.bundle" "$sync_branch"
+
+      - name: Upload verified sync bundle
         if: steps.sync.outputs.changed == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: stackchan-sync-bundle-${{ github.run_id }}
+          path: ${{ runner.temp }}/stackchan-sync.bundle
+          if-no-files-found: error
+          retention-days: 7
+
+  publish:
+    if: needs.sync.outputs.changed == 'true'
+    needs: sync
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      EXTENSION_BRANCH: codex/timothee-factory-1.6.0
+      SYNC_BRANCH: ${{ needs.sync.outputs.branch }}
+
+    steps:
+      - name: Checkout extension branch
+        uses: actions/checkout@v4
+        with:
+          ref: codex/timothee-factory-1.6.0
+          fetch-depth: 0
+
+      - name: Download verified sync bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: stackchan-sync-bundle-${{ github.run_id }}
+          path: ${{ runner.temp }}/stackchan-sync
+
+      # This job receives only the already-validated Git object bundle. It does
+      # not fetch, merge, compile, install dependencies or execute repository
+      # code before using its narrowly scoped write token.
+      - name: Publish review branch and open PR
         env:
           GH_TOKEN: ${{ github.token }}
-          SYNC_BRANCH: ${{ steps.sync.outputs.branch }}
         run: |
+          set -euo pipefail
+          case "$SYNC_BRANCH" in
+            automation/upstream-sync-[0-9]*) ;;
+            *) echo "unexpected sync branch" >&2; exit 1 ;;
+          esac
+
+          bundle="$RUNNER_TEMP/stackchan-sync/stackchan-sync.bundle"
+          git bundle verify "$bundle"
+          sync_sha="$(git bundle list-heads "$bundle" | awk -v expected="refs/heads/$SYNC_BRANCH" '$2 == expected { print $1; exit }')"
+          test -n "$sync_sha"
+          git fetch "$bundle" "$sync_sha"
+
           gh auth setup-git
-          git push origin "HEAD:$SYNC_BRANCH"
+          git push origin "$sync_sha:refs/heads/$SYNC_BRANCH"
           gh pr create \
             --base "$EXTENSION_BRANCH" \
             --head "$SYNC_BRANCH" \
